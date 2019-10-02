@@ -10,6 +10,8 @@ module.exports = (req, res, next) => {
     switch( authType.toLowerCase() ) {
       case 'basic': 
         return _authBasic(authString);
+      case 'bearer':
+        return _authBearer(authString);
       default: 
         return _authError();
     }
@@ -18,6 +20,11 @@ module.exports = (req, res, next) => {
     next(e);
   }
   
+
+  async function _authBearer(str) {
+    let user = await User.authenticateToken(str);
+    return _authenticate(user);
+  }
   
   function _authBasic(str) {
     // str: am9objpqb2hubnk=
@@ -25,7 +32,6 @@ module.exports = (req, res, next) => {
     let bufferString = base64Buffer.toString();    // john:mysecret
     let [username, password] = bufferString.split(':'); // john='john'; mysecret='mysecret']
     let auth = {username,password}; // { username:'john', password:'mysecret' }
-    
     return User.authenticateBasic(auth)
       .then(user => _authenticate(user) )
       .catch(next);
