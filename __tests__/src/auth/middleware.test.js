@@ -6,6 +6,8 @@ const supergoose = require('../../supergoose.js');
 const auth = require('../../../src/auth/middleware.js');
 const Users = require('../../../src/auth/users-model.js');
 
+const jwt = require('jsonwebtoken');
+
 let users = {
   admin: {username: 'admin', password: 'password', role: 'admin'},
   editor: {username: 'editor', password: 'password', role: 'editor'},
@@ -67,6 +69,25 @@ describe('Auth Middleware', () => {
         });
 
     }); // it()
+
+    it('will create tokens with an expiration date if env.AUTH_TYPE is set to expiring', () => {
+      process.env.AUTH_TYPE = 'expiring';
+      let req = {
+        headers: {
+          authorization: 'Basic YWRtaW46cGFzc3dvcmQ=',
+        },
+      };
+      let res = {};
+      let next = jest.fn();
+      let middleware = auth;
+
+      return middleware(req,res,next)
+        .then( () => {
+          cachedToken = req.token;
+          const token = jwt.decode(cachedToken);
+          expect(token).toHaveProperty('exp');
+        });
+    });
     
   });
 

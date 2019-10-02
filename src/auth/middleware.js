@@ -1,6 +1,7 @@
 'use strict';
 
 const User = require('./users-model.js');
+const jwt = require('jsonwebtoken');
 
 module.exports = (req, res, next) => {
   
@@ -20,9 +21,11 @@ module.exports = (req, res, next) => {
     next(e);
   }
   
-
   async function _authBearer(str) {
-    let user = await User.authenticateToken(str);
+    req.token = str;
+    let tokenData = jwt.decode(str);
+    req.usedPerm = !!tokenData.perm;
+    let user = await User.authenticateToken(str, tokenData);
     return _authenticate(user);
   }
   
@@ -40,7 +43,9 @@ module.exports = (req, res, next) => {
   function _authenticate(user) {
     if(user) {
       req.user = user;
-      req.token = user.generateToken();
+      if (!req.usedPerm) {
+        req.token = req.user.generateToken();
+      }
       next();
     }
     else {
