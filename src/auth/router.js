@@ -20,8 +20,15 @@ authRouter.post('/signup', (req, res, next) => {
 });
 
 authRouter.post('/signin', auth, (req, res, next) => {
-  res.cookie('auth', req.token);
+  if (!req.usedPerm) {
+    res.cookie('auth', req.token);
+  }
   res.send(req.token);
+});
+
+authRouter.post('/key', auth, (req, res, next) => {
+  res.cookie('auth', req.token);
+  res.send(`Here's your permanent key: ${req.user.generateToken(true)}`);
 });
 
 authRouter.get('/oauth', (req,res,next) => {
