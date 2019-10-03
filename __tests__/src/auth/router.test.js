@@ -104,7 +104,7 @@ describe('Auth Router', () => {
                 return mockRequest.post('/signin')
                   .set('Authorization', `Bearer ${bearer}`)
                   .expect(500);
-            });
+              });
           });
       });
     });

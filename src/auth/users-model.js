@@ -39,7 +39,7 @@ users.statics.authenticateToken = async function(token, tokenData) {
     console.log(error);
   }
   return null;
-}
+};
 
 users.statics.createFromOauth = function(email) {
 
@@ -63,7 +63,7 @@ users.statics.createFromOauth = function(email) {
 users.statics.authenticateBasic = function(auth) {
   let query = {username:auth.username};
   return this.findOne(query)
-    .then( user => user && user.comparePassword(auth.password) )
+    .then( user => user && user.comparePassword(auth.password))
     .catch(error => {throw error;});
 };
 
@@ -108,6 +108,6 @@ users.methods.generateToken = function(perm) {
 
 users.methods.generateSecret = function() {
   return (process.env.SECRET || 'changeit') + this.password;
-}
+};
 
 module.exports = mongoose.model('users', users);

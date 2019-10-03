@@ -29,7 +29,7 @@ authRouter.post('/signin', auth, (req, res, next) => {
 authRouter.post('/key', auth, (req, res, next) => {
   res.cookie('auth', req.token);
   res.send(`Here's your permanent key: ${req.user.generateToken(true)}`);
-})
+});
 
 authRouter.get('/oauth', (req,res,next) => {
   oauth.authorize(req)
